@@ -155,9 +155,9 @@ class robot:
         rospy.Subscriber(full_ros_namespace + '/position_cartesian_current',
                          Pose, self.__position_cartesian_current_callback)
 
-        rospy.Subscriber(ros_namespace + '/' + self.master_name + '/position_cartesian_current',
+        rospy.Subscriber(ros_namespace + self.master_name + '/position_cartesian_current',
                          Pose, self.__master_position_cartesian_current_callback)
-        rospy.Subscriber(ros_namespace + '/' + self.master_name + '/position_joint_current',
+        rospy.Subscriber(ros_namespace + self.master_name + '/position_joint_current',
                          JointState, self.__master_joint_current_callback)
 
 

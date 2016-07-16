@@ -55,6 +55,7 @@ def start_listening(interval=.01):
         f = open(directory + "/psm1.p", "a")
         f2 = open(directory + "/psm2.p", "a")
         t = rospy.get_rostime()
+        t = t.secs + t.nsecs/1e9
         pose1 = psm1.get_current_cartesian_position()
         pose2 = psm2.get_current_cartesian_position()
         pos1 = pose1.position

@@ -9,6 +9,7 @@ import IPython
 from ImageSubscriber import ImageSubscriber
 import scipy
 import matplotlib.pyplot as plt
+import sys
 
 def startCallback():
     global record_process
@@ -51,6 +52,8 @@ def start_listening(interval=.01):
     while True:
 
         now = rospy.get_rostime()
+        now = now.secs + now.nsecs/1e9
+
         left = imgsub.left_image
         right = imgsub.right_image
 
