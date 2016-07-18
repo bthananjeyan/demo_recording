@@ -10,7 +10,7 @@ from ImageSubscriber import ImageSubscriber
 import scipy
 import matplotlib.pyplot as plt
 import sys
-
+import multiprocessing
 def startCallback():
     global record_process
     print "start"
@@ -26,7 +26,9 @@ def stopCallback():
     if record_process == None:
         print " Nothing currently recording"
         return
+    print multiprocessing.current_process().name
     record_process.terminate()
+    record_process.join()
     record_process = None
 
 
@@ -34,7 +36,9 @@ def exitCallback():
     global record_process
     print "exit"
     if record_process != None:
+        print multiprocessing.current_process().name
         record_process.terminate()
+        record_process.join()
     top.destroy()
     sys.exit()
 

@@ -11,7 +11,7 @@ import scipy
 import matplotlib.pyplot as plt
 import rospy
 import sys
-
+import multiprocessing
 def startCallback():
     global record_process, f, f2
     print "start"
@@ -29,7 +29,7 @@ def stopCallback():
         print " Nothing currently recording"
         return
     record_process.terminate()
-
+    record_process.join()
     record_process = None
 
 
@@ -39,7 +39,9 @@ def exitCallback():
     print "exit"
     if record_process != None:
         print " terminating process"
+        print multiprocessing.current_process().name
         record_process.terminate()
+        record_process.join()
     top.destroy()
     
     if f!=None and f2 !=None:
