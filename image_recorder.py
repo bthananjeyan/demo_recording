@@ -43,9 +43,20 @@ def start_listening(interval=.01):
         os.makedirs(directory + "/right_endoscope")
     open(directory + "/psm1_sync.p", "w+").close()
     open(directory + "/psm2_sync.p", "w+").close()
+    open(directory + "/camera_info.p", "w+").close()
 
 
     imgsub = ImageSubscriber()
+
+    imgsub.dump_camera_info(directory + "/camera_info.p")
+    f = open("camera_to_robot.p", "rb")
+    cmat = pickle.load(f)
+    f.close()
+    f = open(directory + "/camera_to_robot.p", "w+")
+    pickle.dump(cmat, f)
+    f.close()
+
+
     time.sleep(4)
     count = 0
 

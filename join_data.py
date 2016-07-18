@@ -12,6 +12,11 @@ if __name__ == "__main__":
         psm2 = read_file(directory + "/psm2.p")
         t_sync = np.ravel(psm1_sync[:,0])
         t = np.ravel(psm1[:,0])
+
+        f = open(directory + "/camera_to_robot.p", "rb")
+        cmat = pickle.load(f)
+        f.close()
+
         with h5py.File(directory + '/data.h5', 'w') as hf:
             hf.create_dataset('psm1_sync', data=psm1_sync)
             hf.create_dataset('psm2_sync', data=psm2_sync)
@@ -19,3 +24,5 @@ if __name__ == "__main__":
             hf.create_dataset('t', data=t)
             hf.create_dataset('psm1', data=psm1)
             hf.create_dataset('psm2', data=psm2)
+            hf.create_dataset('camera_to_robot', data=cmat)
+

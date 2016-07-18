@@ -70,7 +70,10 @@ class ImageSubscriber:
         self.left_timestamp = msg.header.stamp
         self.left_image = self.bridge.imgmsg_to_cv2(msg, "rgb8")
 
-
+    def dump_camera_info(self, fname):
+        f = open(fname, "w+")
+        pickle.dump(self.info, f)
+        f.close()
 
 if __name__ == "__main__":
     a = ImageSubscriber()
