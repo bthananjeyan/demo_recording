@@ -12,38 +12,39 @@ import matplotlib.pyplot as plt
 import sys
 import multiprocessing
 def startCallback():
-    global record_process
+    global record_process, exit
     print "start"
     if record_process != None:
         print "You are already recording"
         return
-    record_process=Process(target=start_listening)
+    record_process=Process(target=start_listening,args=(exit,))
     record_process.start()
 
 def stopCallback():
-    global record_process
+    global record_process,exit
     print "stop"
     if record_process == None:
         print " Nothing currently recording"
         return
-    print multiprocessing.current_process().name
+    exit.set()
     record_process.terminate()
     record_process.join()
     record_process = None
 
 
 def exitCallback():
-    global record_process
+    global record_process,exit
     print "exit"
     if record_process != None:
-        print multiprocessing.current_process().name
+        exit.set()
         record_process.terminate()
         record_process.join()
+        
     top.destroy()
     sys.exit()
 
 
-def start_listening(interval=.01):
+def start_listening(quit,interval=.01):
     directory = E.get()
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -70,7 +71,7 @@ def start_listening(interval=.01):
     time.sleep(4)
     count = 0
 
-    while True:
+    while not quit.is_set():
 
         now = rospy.get_rostime()
         now = int(now.secs + now.nsecs/1e9)
@@ -104,11 +105,13 @@ def start_listening(interval=.01):
         pickle.dump(two, f2)
 
         time.sleep(interval)
+        
+        
 
 if __name__ == '__main__':
 
 
-
+    exit=multiprocessing.Event()
     directory = "default"
     record_process = None
 

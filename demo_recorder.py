@@ -42,6 +42,7 @@ def exitCallback():
         print multiprocessing.current_process().name
         record_process.terminate()
         record_process.join()
+        print multiprocessing.current_process().name
     top.destroy()
     
     if f!=None and f2 !=None:
