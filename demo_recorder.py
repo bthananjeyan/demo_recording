@@ -1,7 +1,7 @@
 import Tkinter
 from Tkinter import *
 import pickle, time
-import multiprocessing
+from multiprocessing import Process
 import os
 from robot import *
 import numpy as np
@@ -10,31 +10,44 @@ from ImageSubscriber import ImageSubscriber
 import scipy
 import matplotlib.pyplot as plt
 import rospy
+import sys
 
 def startCallback():
     global record_process, f, f2
+    print "start"
     if record_process != None:
-        print "You are already recording"
+        print " You are already recording"
         return
-    start_listening()
+    #set args to whatever allows the program to run
+    record_process=Process(target=start_listening)
+    record_process.start()
 
 def stopCallback():
     global record_process
+    print "stop"
     if record_process == None:
-        print "Nothing currently recording"
+        print " Nothing currently recording"
         return
     record_process.terminate()
+
     record_process = None
 
 
 def exitCallback():
-    global record_process
+    
+    global record_process,f,f2
+    print "exit"
     if record_process != None:
+        print " terminating process"
         record_process.terminate()
     top.destroy()
-    f.close()
-    f2.close()
-    sys.exit()
+    
+    if f!=None and f2 !=None:
+        f.close()
+        f2.close()
+    #raise SystemExit()
+    os._exit(os.EX_OK)
+
 
 
 def start_listening(interval=.01):
@@ -72,7 +85,7 @@ def start_listening(interval=.01):
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [t] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [t] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
-
+        print one, two
         pickle.dump(one, f)
         pickle.dump(two, f2)
 

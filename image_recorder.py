@@ -1,7 +1,7 @@
 import Tkinter
 from Tkinter import *
 import pickle, time
-import multiprocessing
+from multiprocessing import Process
 import os
 from robot import *
 import numpy as np
@@ -13,15 +13,18 @@ import sys
 
 def startCallback():
     global record_process
+    print "start"
     if record_process != None:
         print "You are already recording"
         return
-    start_listening()
+    record_process=Process(target=start_listening)
+    record_process.start()
 
 def stopCallback():
     global record_process
+    print "stop"
     if record_process == None:
-        print "Nothing currently recording"
+        print " Nothing currently recording"
         return
     record_process.terminate()
     record_process = None
@@ -29,6 +32,7 @@ def stopCallback():
 
 def exitCallback():
     global record_process
+    print "exit"
     if record_process != None:
         record_process.terminate()
     top.destroy()
@@ -86,7 +90,7 @@ def start_listening(interval=.01):
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [now] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [now] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
-
+        print left.shape, right.shape
         scipy.misc.imsave(directory + "/left_endoscope/" + str(now) + '.jpg', left)
         scipy.misc.imsave(directory + "/right_endoscope/" + str(now) + '.jpg', right)
 
