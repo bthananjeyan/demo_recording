@@ -45,6 +45,7 @@ def exitCallback():
     if f!=None and f2 !=None:
         f.close()
         f2.close()
+    
     #raise SystemExit()
     os._exit(os.EX_OK)
 
