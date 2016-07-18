@@ -49,6 +49,8 @@ def start_listening(interval=.01):
     open(directory + "/psm2_sync.p", "w+").close()
     open(directory + "/camera_info.p", "w+").close()
 
+    psm1 = robot("PSM1")
+    psm2 = robot("PSM2")
 
     imgsub = ImageSubscriber()
 
@@ -101,8 +103,7 @@ def start_listening(interval=.01):
 
 if __name__ == '__main__':
 
-    psm1 = robot("PSM1")
-    psm2 = robot("PSM2")
+
 
     directory = "default"
     record_process = None

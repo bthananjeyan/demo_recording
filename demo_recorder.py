@@ -61,7 +61,9 @@ def start_listening(interval=.01):
     open(directory + "/psm1.p", "w+").close()
     open(directory + "/psm2.p", "w+").close()
 
-
+    psm1 = robot("PSM1")
+    psm2 = robot("PSM2")
+    
     count = 0
 
     while True:
@@ -111,8 +113,7 @@ def read_file(fname):
 
 if __name__ == '__main__':
 
-    psm1 = robot("PSM1")
-    psm2 = robot("PSM2")
+
 
     f, f2 = None, None
     directory = "default"
