@@ -48,6 +48,7 @@ def exitCallback():
     if f!=None and f2 !=None:
         f.close()
         f2.close()
+    
     #raise SystemExit()
     os._exit(os.EX_OK)
 
@@ -66,7 +67,9 @@ def start_listening(interval=.01):
 
     psm1 = robot("PSM1")
     psm2 = robot("PSM2")
-    
+
+    time.sleep(1)
+
     count = 0
 
     while True:
@@ -86,6 +89,7 @@ def start_listening(interval=.01):
         masterpose2 = psm1.get_master_position_cartesian_current()
         masterjoint1 = psm1.get_master_joint_current()
         masterjoint2 = psm1.get_master_joint_current()
+        print joint1, joint2
         grip1 = [joint1[-1] * 180 / np.pi]
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [t] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
