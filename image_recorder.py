@@ -38,6 +38,10 @@ def exitCallback():
     top.destroy()
     sys.exit()
 
+def dump_image_dict(d):
+    for key in d.keys():
+        scipy.misc.imsave(key, d[key])
+
 
 def start_listening(interval=.01):
     directory = E.get()
@@ -65,11 +69,14 @@ def start_listening(interval=.01):
 
     time.sleep(4)
     count = 0
+    
+    left_images = {}
+    right_images = {}
 
     while True:
 
         now = rospy.get_rostime()
-        now = int(now.secs + now.nsecs/1e9)
+        now = now.secs + now.nsecs/1e9
 
         left = imgsub.left_image
         right = imgsub.right_image
@@ -92,10 +99,15 @@ def start_listening(interval=.01):
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [now] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [now] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
-        print left.shape, right.shape
-        print one, two
-        scipy.misc.imsave(directory + "/left_endoscope/" + str(now) + '.jpg', left)
-        scipy.misc.imsave(directory + "/right_endoscope/" + str(now) + '.jpg', right)
+
+        left_images[directory + "/left_endoscope/" + str(now) + '.jpg'] = left
+        right_images[directory + "/right_endoscope/" + str(now) + "jpg"] = right
+
+        if len(left_images.keys()) > 300:
+            dump_image_dict(left_images)
+            dump_image_dict(right_images)
+            left_images = {}
+            right_images ={}
 
         pickle.dump(one, f)
         pickle.dump(two, f2)
