@@ -49,7 +49,8 @@ def dump_image_dict(d):
     for key in d.keys():
         scipy.misc.imsave(str(key), d[key])
 
-def start_listening(exit,interval=.05):
+
+def start_listening(exit, interval=.05):
     directory = E.get()
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -119,7 +120,6 @@ def start_listening(exit,interval=.05):
 
         pickle.dump(one, f)
         pickle.dump(two, f2)
-
         time.sleep(interval)
     l = Process(target=dump_image_dict, args=(left_images,))
     l.start()

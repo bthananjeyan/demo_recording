@@ -93,12 +93,10 @@ def start_listening(exit,interval=.01):
         masterpose2 = psm1.get_master_position_cartesian_current()
         masterjoint1 = psm1.get_master_joint_current()
         masterjoint2 = psm1.get_master_joint_current()
-        print joint1, joint2
         grip1 = [joint1[-1] * 180 / np.pi]
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [t] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [t] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
-        print one, two
         pickle.dump(one, f)
         pickle.dump(two, f2)
 
