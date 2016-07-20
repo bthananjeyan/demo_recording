@@ -121,6 +121,10 @@ def start_listening(exit,interval=.05):
         pickle.dump(two, f2)
 
         time.sleep(interval)
+    l = Process(target=dump_image_dict, args=(left_images,))
+    l.start()
+    r = Process(target=dump_image_dict, args=(right_images,))
+    r.start()
         
         
 
