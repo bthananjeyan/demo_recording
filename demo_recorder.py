@@ -13,13 +13,14 @@ import rospy
 import sys
 import multiprocessing
 def startCallback():
-    global record_process, f, f2
+    global record_process, f, f2,exit
     print "start"
     if record_process != None:
         print " You are already recording"
         return
-    #set args to whatever allows the program to run
-    record_process=Process(target=start_listening)
+    if exit.is_set():
+        exit.clear()
+    record_process=Process(target=start_listening, args=(exit,))
     record_process.start()
 
 def stopCallback():
@@ -28,6 +29,7 @@ def stopCallback():
     if record_process == None:
         print " Nothing currently recording"
         return
+    exit.set()
     record_process.terminate()
     record_process.join()
     record_process = None
@@ -39,22 +41,24 @@ def exitCallback():
     print "exit"
     if record_process != None:
         print " terminating process"
-        print multiprocessing.current_process().name
+        if(exit.is_set()):
+            pass
+        else:
+            exit.set()
         record_process.terminate()
         record_process.join()
-        print multiprocessing.current_process().name
     top.destroy()
     
     if f!=None and f2 !=None:
         f.close()
         f2.close()
     
-    #raise SystemExit()
-    os._exit(os.EX_OK)
+    raise SystemExit()
+    #os._exit(os.EX_OK)
 
 
 
-def start_listening(interval=.01):
+def start_listening(exit,interval=.01):
     pos1, pos2 = None, None
     grip1, grip2 = None, None
     directory = E.get()
@@ -72,7 +76,7 @@ def start_listening(interval=.01):
 
     count = 0
 
-    while True:
+    while not exit.is_set():
         f = open(directory + "/psm1.p", "a")
         f2 = open(directory + "/psm2.p", "a")
         t = rospy.get_rostime()
@@ -121,7 +125,7 @@ def read_file(fname):
 if __name__ == '__main__':
 
 
-
+    exit=multiprocessing.Event()
     f, f2 = None, None
     directory = "default"
     record_process = None

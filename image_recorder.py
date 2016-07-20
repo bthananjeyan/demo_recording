@@ -17,6 +17,8 @@ def startCallback():
     if record_process != None:
         print "You are already recording"
         return
+    if exit.is_set():
+        exit.clear()
     record_process=Process(target=start_listening,args=(exit,))
     record_process.start()
 
@@ -98,7 +100,7 @@ def start_listening(quit,interval=.01):
         one = [now] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [now] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
         print left.shape, right.shape
-        print one, two
+        #print one, two
         scipy.misc.imsave(directory + "/left_endoscope/" + str(now) + '.jpg', left)
         scipy.misc.imsave(directory + "/right_endoscope/" + str(now) + '.jpg', right)
 
