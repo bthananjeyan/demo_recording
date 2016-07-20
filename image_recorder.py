@@ -40,10 +40,10 @@ def exitCallback():
 
 def dump_image_dict(d):
     for key in d.keys():
-        scipy.misc.imsave(key, d[key])
+        scipy.misc.imsave(str(key), d[key])
 
 
-def start_listening(interval=.01):
+def start_listening(interval=.05):
     directory = E.get()
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -76,7 +76,7 @@ def start_listening(interval=.01):
     while True:
 
         now = rospy.get_rostime()
-        now = now.secs + now.nsecs/1e9
+        now = int((now.secs + now.nsecs/1e9) * 1e3) # in milliseconds
 
         left = imgsub.left_image
         right = imgsub.right_image
@@ -101,11 +101,13 @@ def start_listening(interval=.01):
         two = [now] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
 
         left_images[directory + "/left_endoscope/" + str(now) + '.jpg'] = left
-        right_images[directory + "/right_endoscope/" + str(now) + "jpg"] = right
-
-        if len(left_images.keys()) > 300:
-            dump_image_dict(left_images)
-            dump_image_dict(right_images)
+        right_images[directory + "/right_endoscope/" + str(now) + ".jpg"] = right
+        print len(left_images.keys())
+        if len(left_images.keys()) >= 100:
+            l = Process(target=dump_image_dict, args=(left_images,))
+            l.start()
+            r = Process(target=dump_image_dict, args=(right_images,))
+            r.start()
             left_images = {}
             right_images ={}
 
