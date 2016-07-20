@@ -49,7 +49,7 @@ def dump_image_dict(d):
     for key in d.keys():
         scipy.misc.imsave(str(key), d[key])
 
-def start_listening(interval=.05):
+def start_listening(exit,interval=.05):
     directory = E.get()
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -79,7 +79,7 @@ def start_listening(interval=.05):
     left_images = {}
     right_images = {}
 
-    while not quit.is_set():
+    while not exit.is_set():
 
         now = rospy.get_rostime()
         now = int((now.secs + now.nsecs/1e9) * 1e3) # in milliseconds
