@@ -1,0 +1,9 @@
+# Compiled Source #
+###################
+*.pyc
+
+# Demonstrations  #
+###################
+*.h5
+*.p
+*.jpg
