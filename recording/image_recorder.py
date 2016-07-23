@@ -50,7 +50,7 @@ def dump_image_dict(d):
         scipy.misc.imsave(str(key), d[key])
 
 
-def start_listening(exit, interval=.05):
+def start_listening(exit, interval=.04):
     directory = E.get()
     if not os.path.exists(directory):
         os.makedirs(directory)
