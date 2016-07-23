@@ -19,6 +19,16 @@ def process_demo(demo_directory):
 	good_features = np.r_[0:psm1_sync.shape[1]]
 	psm1_sync = psm1_sync[:, good_features]
 	psm2_sync = psm2_sync[:, good_features]
+	# Transform position
+	psm1_sync[:,1:4] = transform_matrix(psm1_sync[:,1:4], invtransform)
+	psm2_sync[:,1:4] = transform_matrix(psm2_sync[:,1:4], invtransform)
+	# Write processed data
+	with h5py.File("../" + demo_directory + '/clean_data.h5','w') as hf:
+		hf.create_dataset('psm1_sync', data=psm1_sync)
+        hf.create_dataset('psm2_sync', data=psm2_sync)
+        hf.create_dataset('camera_to_robot', data=transform)
+        hf.create_dataset('robot_to_camera', data=invtransform)
+
 	return psm1_sync, psm2_sync
 
 def transform_matrix(data, transform):
