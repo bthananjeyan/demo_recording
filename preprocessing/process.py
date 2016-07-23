@@ -9,10 +9,11 @@ def process_demo(demo_directory):
 		psm2_sync = np.matrix(hf.get('psm2_sync'))
 		transform = np.matrix(hf.get('camera_to_robot'))
 	invtransform = np.zeros(transform.shape)
-	invtransform[:3, :3] = transform[:3,:3].T
-	invtransform[:, 3] = -tranform[:,3]
+	invtransform[:3,:3] = transform[:3,:3].T
+	invtransform[:,3] = -tranform[:,3]
 	# Fix times
-	temp = np.ones((psm1_sync.shape[0], 1)) * psm1_sync[0,0]
+	time = psm1_sync[:,0]
+	temp = np.ones((psm1_sync.shape[0],1)) * psm1_sync[0,0]
 	psm1_sync[:,0] -= temp
 	psm2_sync[:,0] -= temp
 	# Throw out bad features
@@ -22,6 +23,9 @@ def process_demo(demo_directory):
 	# Transform position
 	psm1_sync[:,1:4] = transform_matrix(psm1_sync[:,1:4], invtransform)
 	psm2_sync[:,1:4] = transform_matrix(psm2_sync[:,1:4], invtransform)
+	left_end, right_end = featurize_images(demo_directory, time)
+	psm1_sync = np.hstack((psm1_sync, left_end))
+	psm2_sync = np.hstack((psm2_sync, right_end))
 	# Write processed data
 	with h5py.File("../" + demo_directory + '/clean_data.h5','w') as hf:
 		hf.create_dataset('psm1_sync', data=psm1_sync)
@@ -33,6 +37,22 @@ def process_demo(demo_directory):
 
 def transform_matrix(data, transform):
 	return np.hstack((data, np.ones((data.shape[0], 1)))) * transform.T
+
+def featurize_images(demo_directory, t):
+	t = np.ravel(t).tolist()
+	lst1 = []
+	for time in t:
+		img = np.array(cv2.imread("../" + demo_directory + "/left_endoscope/" + str(time) + ".jpg"))
+		lst1.append(featurize_image(img))
+	lst2 = []
+	for time in t:
+		img = np.array(cv2.imread("../" + demo_directory + "/right_endoscope/" + str(time) + ".jpg"))
+		lst2.append(featurize_image(img))
+	return np.matrix(lst1), np.matrix(lst2)
+
+def featurize_image(img):
+	return [1, 1, 1]
+
 
 if __name__ == "__main__":
 
