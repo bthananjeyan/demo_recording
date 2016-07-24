@@ -27,7 +27,7 @@ def process_demo(demo_directory):
     left_end, right_end = featurize_images(demo_directory, time)
     demo_data = np.hstack((psm1_sync, psm2_sync, left_end, right_end))
     # Write processed data
-    with h5py.File("../" + demo_directory + '/clean_data.h5','w') as hf:
+    with h5py.File("../" + demo_directory + '/demo.h5','w') as hf:
         hf.create_dataset('demo_data', data=demo_data)
         hf.create_dataset('camera_to_robot', data=transform)
         hf.create_dataset('robot_to_camera', data=invtransform)
