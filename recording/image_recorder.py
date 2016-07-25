@@ -74,7 +74,7 @@ def start_listening(exit, interval=.04):
     f.close()
 
 
-    time.sleep(4)
+    time.sleep(2)
     count = 0
     
     left_images = {}
