@@ -1,10 +1,11 @@
 import numpy as np
 import h5py
 import sys
+import cv2
 
 def process_demo(demo_directory):
     # Load data
-    with h5py.File("../" + demo_directory + '/data.h5','r') as hf:
+    with h5py.File(demo_directory + '/data.h5','r') as hf:
         psm1_sync = np.matrix(hf.get('psm1_sync'))
         psm2_sync = np.matrix(hf.get('psm2_sync'))
         transform = np.matrix(hf.get('camera_to_robot'))
@@ -15,15 +16,11 @@ def process_demo(demo_directory):
         # psm1_invtransform = invert_rigid_transformation(psm1_transform)
         # psm2_invtransform = invert_rigid_transformation(psm2_transform)
 
-
-    invtransform = np.zeros(transform.shape)
-    invtransform[:3,:3] = transform[:3,:3].T
-    invtransform[:,3] = -tranform[:,3]
+    invtransform = invert_rigid_transformation(transform)
 
     # Delete when ready
     psm1_invtransform = invtransform
     psm2_invtransform = invtransform
-
 
     # Fix times
     time = psm1_sync[:,0]
@@ -41,7 +38,7 @@ def process_demo(demo_directory):
     left_end, right_end = featurize_images(demo_directory, time)
     demo_data = np.hstack((psm1_sync, psm2_sync, left_end, right_end))
     # Write processed data
-    with h5py.File("../" + demo_directory + '/demo.h5','w') as hf:
+    with h5py.File(demo_directory + '/demo.h5','w') as hf:
         hf.create_dataset('demo_data', data=demo_data)
         hf.create_dataset('camera_to_robot', data=transform)
         hf.create_dataset('robot_to_camera', data=invtransform)
@@ -55,7 +52,7 @@ def process_demo(demo_directory):
 def invert_rigid_transformation(transform):
     invtransform = np.zeros(transform.shape)
     invtransform[:3,:3] = transform[:3,:3].T
-    invtransform[:,3] = -tranform[:,3]
+    invtransform[:,3] = -np.ravel(transform[:,3])
     return invtransform
 
 def transform_matrix(data, transform):
@@ -65,11 +62,11 @@ def featurize_images(demo_directory, t):
     t = np.ravel(t).tolist()
     lst1 = []
     for time in t:
-        img = np.array(cv2.imread("../" + demo_directory + "/left_endoscope/" + str(time) + ".jpg"))
+        img = np.array(cv2.imread(demo_directory + "/left_endoscope/" + str(time) + ".jpg"))
         lst1.append(featurize_image(img))
     lst2 = []
     for time in t:
-        img = np.array(cv2.imread("../" + demo_directory + "/right_endoscope/" + str(time) + ".jpg"))
+        img = np.array(cv2.imread(demo_directory + "/right_endoscope/" + str(time) + ".jpg"))
         lst2.append(featurize_image(img))
     return np.matrix(lst1), np.matrix(lst2)
 

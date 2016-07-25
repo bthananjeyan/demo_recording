@@ -36,6 +36,7 @@ def join_data(args):
 if __name__ == "__main__":
     
     for directory in sys.argv[1:]:
+        directory = "../" + directory
         psm1_sync = read_file(directory + "/psm1_sync.p")
         psm2_sync = read_file(directory + "/psm2_sync.p")
         t_sync = np.ravel(psm1_sync[:,0])
@@ -44,7 +45,7 @@ if __name__ == "__main__":
         cmat = pickle.load(f)
         f.close()
 
-                
+
         # Uncomment when ready
         # f = open(directory + "/camera_to_psm1.p", "rb")
         # psm1_transform = pickle.load(f)
