@@ -52,6 +52,7 @@ def dump_image_dict(d):
 
 def start_listening(exit, interval=.04):
     directory = E.get()
+    directory = "../" + directory
     if not os.path.exists(directory):
         os.makedirs(directory)
         os.makedirs(directory + "/left_endoscope")
@@ -106,6 +107,7 @@ def start_listening(exit, interval=.04):
         grip2 = [joint2[-1] * 180 / np.pi]
         one = [now] + list(pos1) + rot1 + list(grip1) + list(joint1) + list(masterpose1) + list(masterjoint1)
         two = [now] + list(pos2) + rot2 + list(grip2) + list(joint2) + list(masterpose2) + list(masterjoint2)
+
 
         left_images[directory + "/left_endoscope/" + str(now) + '.jpg'] = left
         right_images[directory + "/right_endoscope/" + str(now) + ".jpg"] = right
