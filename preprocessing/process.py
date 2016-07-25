@@ -8,9 +8,23 @@ def process_demo(demo_directory):
         psm1_sync = np.matrix(hf.get('psm1_sync'))
         psm2_sync = np.matrix(hf.get('psm2_sync'))
         transform = np.matrix(hf.get('camera_to_robot'))
+
+        # Uncomment when ready
+        # psm1_transform = np.matrix(hf.get('camera_to_psm1'))
+        # psm2_transform = np.matrix(hf.get('camera_to_psm2'))
+        # psm1_invtransform = invert_rigid_transformation(psm1_transform)
+        # psm2_invtransform = invert_rigid_transformation(psm2_transform)
+
+
     invtransform = np.zeros(transform.shape)
     invtransform[:3,:3] = transform[:3,:3].T
     invtransform[:,3] = -tranform[:,3]
+
+    # Delete when ready
+    psm1_invtransform = invtransform
+    psm2_invtransform = invtransform
+
+
     # Fix times
     time = psm1_sync[:,0]
     temp = np.ones((psm1_sync.shape[0],1)) * psm1_sync[0,0]
@@ -21,8 +35,8 @@ def process_demo(demo_directory):
     psm1_sync = psm1_sync[:, good_features]
     psm2_sync = psm2_sync[:, good_features]
     # Transform position
-    psm1_sync[:,1:4] = transform_matrix(psm1_sync[:,1:4], invtransform)
-    psm2_sync[:,1:4] = transform_matrix(psm2_sync[:,1:4], invtransform)
+    psm1_sync[:,1:4] = transform_matrix(psm1_sync[:,1:4], psm1_invtransform)
+    psm2_sync[:,1:4] = transform_matrix(psm2_sync[:,1:4], psm2_invtransform)
     # Featurize images
     left_end, right_end = featurize_images(demo_directory, time)
     demo_data = np.hstack((psm1_sync, psm2_sync, left_end, right_end))
@@ -32,7 +46,17 @@ def process_demo(demo_directory):
         hf.create_dataset('camera_to_robot', data=transform)
         hf.create_dataset('robot_to_camera', data=invtransform)
 
+        # Uncomment When Ready
+        # hf.create_dataset('psm1_transform', data=psm1_transform)
+        # hf.create_dataset('psm2_transform', data=psm2_transform)
+
     return demo_data
+
+def invert_rigid_transformation(transform):
+    invtransform = np.zeros(transform.shape)
+    invtransform[:3,:3] = transform[:3,:3].T
+    invtransform[:,3] = -tranform[:,3]
+    return invtransform
 
 def transform_matrix(data, transform):
     return np.hstack((data, np.ones((data.shape[0], 1)))) * transform.T
