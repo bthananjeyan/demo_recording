@@ -1,6 +1,8 @@
 from multiprocessing import Process, Queue
 import cv2
 import time
+import Tkinter
+from Tkinter import *
 class _Camera(Process):
 
     def __init__(self, camera, cmd_q, res, codec, fps):
@@ -30,8 +32,12 @@ class _Camera(Process):
                     
             if self.recording:
                 ret_val, frame = self.camera.read()
+                print 'reading'
+                
                 if ret_val:
                     self.out.write(frame)
+                    cv2.imshow('frame',frame)
+                    cv2.waitKey(1)
 
 class VideoRecorder:
 
@@ -62,13 +68,13 @@ class VideoRecorder:
         self._camera = _Camera(self._actual_camera, self._cmd_q, self._res, self._codec, self._fps)
         self._camera.start()
 
-    def start_recording(self, output_file):
+    def start_recording(self):
         if not self._started:
             raise Exception("Must start the video recorder first by calling .start()!")
         if self._recording:
             raise Exception("Cannot record a video while one is already recording!")
         self._recording = True
-        self._cmd_q.put(('start', output_file))
+        self._cmd_q.put(('start', E.get()))
         
     def stop_recording(self):
         if not self._recording:
@@ -80,14 +86,31 @@ class VideoRecorder:
         if not self._started:
             raise Exception("Cannot stop a video recorder before starting it!")
         self._started = False
-        self._actual_camera.release()
+        #self._actual_camera.release()
         self._camera.terminate()
+        cv2.destroyAllWindows()
+        sys.exit()
 
 if __name__ == "__main__":
     vr=VideoRecorder()
     vr.start()
-    vr.start_recording('test.avi')
-    time.sleep(3)
-    vr.stop_recording()
+    top = Tkinter.Tk()
+    top.title('Video Camera')
+    top.geometry('400x200')
 
-    vr.stop()
+
+    B = Tkinter.Button(top, text="Start Recording", command = vr.start_recording)
+    C = Tkinter.Button(top, text="Stop Recording", command = vr.stop_recording)
+    D = Tkinter.Button(top, text="Exit", command = vr.stop)
+    E = Entry(top)
+
+
+    B.pack()
+    C.pack()
+    D.pack()
+    E.pack()
+
+    E.delete(0, END)
+    E.insert(0, "test.avi")
+
+    top.mainloop()
